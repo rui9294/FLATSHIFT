@@ -2,17 +2,14 @@ using UnityEngine;
 
 public class PlayerDotMove : MonoBehaviour
 {
-    public float speed = 300f; // “®‚­‘¬‚³
-    private RectTransform rectTransform;
-
-    void Start()
-    {
-        rectTransform = GetComponent<RectTransform>();
-    }
+    public float moveSpeed = 5f;
 
     void Update()
     {
-        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
-        rectTransform.anchoredPosition += new Vector2(move.x, move.y) * speed * Time.deltaTime;
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+
+        Vector3 move = new Vector3(horizontal, vertical, 0f) * moveSpeed * Time.deltaTime;
+        transform.position += move;
     }
 }
