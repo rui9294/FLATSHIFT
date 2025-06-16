@@ -230,8 +230,7 @@ MonoBehaviour:
   player: {fileID: 468366757}
   targetCircle: {fileID: 1546160146}
   revealTime: 10
-  slideDuration: 1
-  fadeSpeed: 1
+  maxOffset: 0.45
 --- !u!4 &438119960
 Transform:
   m_ObjectHideFlags: 0
@@ -286,7 +285,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 1}
   m_SizeDelta: {x: 2, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &468366758
@@ -963,7 +962,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 100
   m_Sprite: {fileID: -2413806693520163455, guid: 5235e27b6d8e2f34793975ef8a80eda5, type: 3}
-  m_Color: {r: 0.5245282, g: 0.5245282, b: 0.5245282, a: 0}
+  m_Color: {r: 0.5245282, g: 0.5245282, b: 0.5245282, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1055,10 +1054,19 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.2866516
-      value: 1.0188484
-      inSlope: 0
-      outSlope: 0
+      time: 0.67578065
+      value: 0.29438797
+      inSlope: 1.397798
+      outSlope: 1.397798
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.7682909
+      value: 0.99434507
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
