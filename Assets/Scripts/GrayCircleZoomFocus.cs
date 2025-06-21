@@ -29,6 +29,7 @@ public class GrayCircleZoomFocus : MonoBehaviour
     {
         if (!hasFocused)
         {
+            Debug.Log("StartFocus() called");
             StartCoroutine(FocusSequence());
         }
     }
@@ -40,22 +41,24 @@ public class GrayCircleZoomFocus : MonoBehaviour
         if (playerMovementScript != null)
             playerMovementScript.enabled = false;
 
-        // 灰丸（このオブジェクト）へのカメラ移動
         Vector3 targetPos = new Vector3(transform.position.x, transform.position.y, originalCamPos.z);
+        Debug.Log("Going to gray circle at: " + targetPos + " over " + focusMoveDuration + "s");
         yield return MoveCamera(mainCamera.transform.position, targetPos, focusMoveDuration);
 
-        // 灰丸でしばらく停止
+        Debug.Log("Waiting " + stayFocusedDuration + " seconds...");
         yield return new WaitForSeconds(stayFocusedDuration);
+        Debug.Log("Waited done.");
 
-        // 🔧プレイヤーの現在位置をこのタイミングで再取得
-        Vector3 returnPos = new Vector3(player.position.x, player.position.y, originalCamPos.z);
-
-        // プレイヤーへカメラを戻す
+        Vector3 returnPos = new Vector3(player.position.x, player.position.y + 0.01f, originalCamPos.z);
+        Debug.Log("Returning to player at: " + returnPos + " over " + returnMoveDuration + "s");
         yield return MoveCamera(mainCamera.transform.position, returnPos, returnMoveDuration);
 
         if (playerMovementScript != null)
             playerMovementScript.enabled = true;
+
+        Debug.Log("FocusSequence completed.");
     }
+
 
     private IEnumerator MoveCamera(Vector3 from, Vector3 to, float duration)
     {
@@ -63,10 +66,14 @@ public class GrayCircleZoomFocus : MonoBehaviour
         while (elapsed < duration)
         {
             float t = elapsed / duration;
-            mainCamera.transform.position = Vector3.Lerp(from, to, t);
+            Vector3 newPos = Vector3.Lerp(from, to, t);
+            mainCamera.transform.position = newPos;
+            Debug.Log($"[MoveCamera] t={t:F2}, pos={newPos}");
             elapsed += Time.deltaTime;
             yield return null;
         }
+
         mainCamera.transform.position = to;
+        Debug.Log($"[MoveCamera] Final position reached: {to}");
     }
 }
