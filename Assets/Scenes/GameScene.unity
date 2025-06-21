@@ -258,10 +258,10 @@ GameObject:
   - component: {fileID: 468366759}
   - component: {fileID: 468366758}
   - component: {fileID: 468366761}
-  - component: {fileID: 468366762}
   - component: {fileID: 468366764}
   - component: {fileID: 468366763}
   - component: {fileID: 468366765}
+  - component: {fileID: 468366766}
   m_Layer: 5
   m_Name: PlayerDot
   m_TagString: Player
@@ -381,19 +381,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &468366762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 468366756}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee25f97ad299b1e429302bd9c820f72a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 5
 --- !u!50 &468366763
 Rigidbody2D:
   serializedVersion: 5
@@ -472,6 +459,19 @@ MonoBehaviour:
   shadowPrefab: {fileID: 3982232567358678518, guid: 06b99a8cf19bdca4aae46734794be11c, type: 3}
   spawnInterval: 0.1
   minMoveDistance: 0.01
+--- !u!114 &468366766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 468366756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee25f97ad299b1e429302bd9c820f72a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
 --- !u!1 &570867446
 GameObject:
   m_ObjectHideFlags: 0
@@ -534,8 +534,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 7
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -861,6 +861,7 @@ GameObject:
   - component: {fileID: 1469818823}
   - component: {fileID: 1469818822}
   - component: {fileID: 1469818821}
+  - component: {fileID: 1469818824}
   m_Layer: 5
   m_Name: DialoguePanel
   m_TagString: Untagged
@@ -902,9 +903,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueText: {fileID: 1636003836}
   dialoguePanel: {fileID: 1469818819}
-  playerMovementScript: {fileID: 0}
+  playerMovementScript: {fileID: 468366766}
   dialogueLines:
-  - "\u2026\u3048\u2026"
+  - "\u3093\u2026\n"
   - "\u3053\u3053\u306F\u2026\u3069\u3053\uFF1F"
   - "\u2026\u884C\u304B\u306A\u304D\u3083\u3002"
   fadeDuration: 1
@@ -947,6 +948,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1469818819}
   m_CullTransparentMesh: 1
+--- !u!114 &1469818824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1469818819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee25f97ad299b1e429302bd9c820f72a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
 --- !u!1 &1546160146
 GameObject:
   m_ObjectHideFlags: 0
@@ -959,6 +973,7 @@ GameObject:
   - component: {fileID: 1546160147}
   - component: {fileID: 1546160150}
   - component: {fileID: 1546160151}
+  - component: {fileID: 1546160152}
   m_Layer: 0
   m_Name: GrayCircle
   m_TagString: Untagged
@@ -1123,6 +1138,21 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1546160152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1546160146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb5c9cf4198fb5043b96d8d91ee9d340, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 468366757}
+  playerMovementScript: {fileID: 468366766}
+  focusDuration: 2
 --- !u!1 &1636003834
 GameObject:
   m_ObjectHideFlags: 0
@@ -1180,7 +1210,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u2026\u3048\u2026"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 67c54c12d28912146b92e39037c80ee2, type: 2}
   m_sharedMaterial: {fileID: 5362924711513288054, guid: 67c54c12d28912146b92e39037c80ee2, type: 2}
