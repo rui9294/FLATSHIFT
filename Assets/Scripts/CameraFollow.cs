@@ -1,14 +1,18 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform target;       // ’Ç‚¢‚©‚¯‚½‚¢‘ÎÛi•ŠÛj
-    public Vector3 offset = new Vector3(0f, 0f, -10f);  // ƒJƒƒ‰‚Ì‰ŠúZˆÊ’u
-    public float smoothSpeed = 5f; // ƒJƒƒ‰‚Ì’Ç”öƒXƒs[ƒh
+    public Transform target;       // è¿½ã„ã‹ã‘ãŸã„å¯¾è±¡ï¼ˆé»’ä¸¸ï¼‰
+    public Vector3 offset = new Vector3(0f, 0f, -10f);  // ã‚«ãƒ¡ãƒ©ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+    public float smoothSpeed = 5f; // ã‚«ãƒ¡ãƒ©ã®è¿½å°¾ã‚¹ãƒ”ãƒ¼ãƒ‰
+
+    [HideInInspector]
+    public bool isFrozen = false;  // å¤–éƒ¨ã‹ã‚‰è¿½å¾“ã‚’ä¸€æ™‚åœæ­¢ã•ã›ã‚‹ãƒ•ãƒ©ã‚°
 
     void LateUpdate()
     {
-        if (target == null) return;
+        if (target == null || isFrozen)
+            return;
 
         Vector3 desiredPosition = target.position + offset;
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * smoothSpeed);

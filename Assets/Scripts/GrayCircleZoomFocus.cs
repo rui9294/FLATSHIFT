@@ -13,6 +13,7 @@ public class GrayCircleZoomFocus : MonoBehaviour
     private Camera mainCamera;
     private Vector3 originalCamPos;
     private bool hasFocused = false;
+    private CameraFollow cameraFollowScript;
 
     void Awake()
     {
@@ -22,6 +23,12 @@ public class GrayCircleZoomFocus : MonoBehaviour
             Debug.LogError("Main Camera not found! Make sure your camera has the 'MainCamera' tag.");
         }
 
+        cameraFollowScript = mainCamera.GetComponent<CameraFollow>();
+        if (cameraFollowScript == null)
+        {
+            Debug.LogWarning("CameraFollow script not found on Main Camera.");
+        }
+
         originalCamPos = mainCamera.transform.position;
     }
 
@@ -29,7 +36,6 @@ public class GrayCircleZoomFocus : MonoBehaviour
     {
         if (!hasFocused)
         {
-            Debug.Log("StartFocus() called");
             StartCoroutine(FocusSequence());
         }
     }
@@ -38,27 +44,32 @@ public class GrayCircleZoomFocus : MonoBehaviour
     {
         hasFocused = true;
 
+        // プレイヤーの移動を止める
         if (playerMovementScript != null)
             playerMovementScript.enabled = false;
 
+        // カメラの追従を止める
+        if (cameraFollowScript != null)
+            cameraFollowScript.isFrozen = true;
+
+        // カメラを灰丸に移動
         Vector3 targetPos = new Vector3(transform.position.x, transform.position.y, originalCamPos.z);
-        Debug.Log("Going to gray circle at: " + targetPos + " over " + focusMoveDuration + "s");
         yield return MoveCamera(mainCamera.transform.position, targetPos, focusMoveDuration);
 
-        Debug.Log("Waiting " + stayFocusedDuration + " seconds...");
+        // 灰丸でしばらく止まる
         yield return new WaitForSeconds(stayFocusedDuration);
-        Debug.Log("Waited done.");
 
-        Vector3 returnPos = new Vector3(player.position.x, player.position.y + 0.01f, originalCamPos.z);
-        Debug.Log("Returning to player at: " + returnPos + " over " + returnMoveDuration + "s");
+        // カメラを黒丸へ戻す
+        Vector3 returnPos = new Vector3(player.position.x, player.position.y, originalCamPos.z);
         yield return MoveCamera(mainCamera.transform.position, returnPos, returnMoveDuration);
+
+        // カメラ追従とプレイヤー操作を再開
+        if (cameraFollowScript != null)
+            cameraFollowScript.isFrozen = false;
 
         if (playerMovementScript != null)
             playerMovementScript.enabled = true;
-
-        Debug.Log("FocusSequence completed.");
     }
-
 
     private IEnumerator MoveCamera(Vector3 from, Vector3 to, float duration)
     {
@@ -68,12 +79,10 @@ public class GrayCircleZoomFocus : MonoBehaviour
             float t = elapsed / duration;
             Vector3 newPos = Vector3.Lerp(from, to, t);
             mainCamera.transform.position = newPos;
-            Debug.Log($"[MoveCamera] t={t:F2}, pos={newPos}");
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         mainCamera.transform.position = to;
-        Debug.Log($"[MoveCamera] Final position reached: {to}");
     }
 }

@@ -625,6 +625,7 @@ MonoBehaviour:
   target: {fileID: 468366757}
   offset: {x: 0, y: 0, z: -10}
   smoothSpeed: 10
+  isFrozen: 0
 --- !u!1 &657120773
 GameObject:
   m_ObjectHideFlags: 0
@@ -1104,7 +1105,7 @@ MonoBehaviour:
   shrinkDuration: 0.2
   pauseDuration: 0.5
   expandDuration: 1
-  maxScale: 30
+  maxScale: 50
   springCurve:
     serializedVersion: 2
     m_Curve:
@@ -1152,7 +1153,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 468366757}
   playerMovementScript: {fileID: 468366766}
-  focusDuration: 2
+  focusMoveDuration: 2
+  stayFocusedDuration: 2
+  returnMoveDuration: 2
 --- !u!1 &1636003834
 GameObject:
   m_ObjectHideFlags: 0
