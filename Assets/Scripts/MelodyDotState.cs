@@ -2,16 +2,19 @@ using UnityEngine;
 
 public class MelodyDotState : MonoBehaviour
 {
-    public float switchInterval = 1.0f;      // 黒⇔白の切り替え間隔（秒）
-    public Color activeColor = Color.white; // 通れる時の色（白）
-    public Color inactiveColor = new Color(0f, 0.12f, 0.25f); // 通れないとき（深い青）
+    public float whiteTime = 0.2f;  // 通れる（白）時間
+    public float blackTime = 0.8f;  // 通れない（黒）時間
+    public Color activeColor = Color.white;
+    public Color inactiveColor = new Color(0f, 0.12f, 0.25f);
 
     private SpriteRenderer spriteRenderer;
+    private Collider2D col;
     private bool isActive = false;
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        col = GetComponent<Collider2D>();
         StartCoroutine(SwitchStateRoutine());
     }
 
@@ -19,13 +22,24 @@ public class MelodyDotState : MonoBehaviour
     {
         while (true)
         {
-            isActive = !isActive;
-            spriteRenderer.color = isActive ? activeColor : inactiveColor;
-            yield return new WaitForSeconds(switchInterval);
+            // 白状態（通れる）
+            isActive = true;
+            spriteRenderer.color = activeColor;
+            if (col != null)
+                col.isTrigger = true;
+
+            yield return new WaitForSeconds(whiteTime);
+
+            // 黒状態（通れない）
+            isActive = false;
+            spriteRenderer.color = inactiveColor;
+            if (col != null)
+                col.isTrigger = false;
+
+            yield return new WaitForSeconds(blackTime);
         }
     }
 
-    // 外部から状態を取得するための公開メソッド
     public bool IsPassable()
     {
         return isActive;
