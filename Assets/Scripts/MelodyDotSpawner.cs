@@ -2,30 +2,33 @@ using UnityEngine;
 
 public class MelodyDotSpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject dotPrefab;     // 生成するDotのプレハブ
-    [SerializeField] private Transform player;         // プレイヤーへの参照
-    [SerializeField] private float spawnInterval = 2f; // 生成間隔（秒）
-    [SerializeField] private float spawnOffsetY = 10f; // プレイヤーより上に生成する距離
+    public GameObject melodyDotPrefab;
+    public float spawnInterval = 1.5f;
 
     private float timer = 0f;
 
     void Update()
     {
-        if (player == null || dotPrefab == null)
-            return;
-
         timer += Time.deltaTime;
-
         if (timer >= spawnInterval)
         {
-            SpawnDot();
+            SpawnMelodyDot();
             timer = 0f;
         }
     }
 
-    private void SpawnDot()
+    void SpawnMelodyDot()
     {
-        Vector3 spawnPos = new Vector3(player.position.x, player.position.y + spawnOffsetY, 0f);
-        Instantiate(dotPrefab, spawnPos, Quaternion.identity);
+        // 画面外の上（中央）にスポーンさせる
+        Camera cam = Camera.main;
+
+        // Zはカメラからの距離なので、Z=0のオブジェクトを映すにはカメラのZも考慮
+        float zDistance = Mathf.Abs(cam.transform.position.z);  // 例：10f
+
+        // 画面上の少し外側（Y=1.1）にスポーン
+        Vector3 viewportPos = new Vector3(0.5f, 1.1f, zDistance);
+        Vector3 worldPos = cam.ViewportToWorldPoint(viewportPos);
+
+        Instantiate(melodyDotPrefab, worldPos, Quaternion.identity);
     }
 }

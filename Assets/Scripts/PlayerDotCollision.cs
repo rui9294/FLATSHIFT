@@ -2,31 +2,31 @@ using UnityEngine;
 
 public class PlayerDotCollision : MonoBehaviour
 {
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("OnCollisionEnter2D: " + collision.collider.name);
-
-        if (collision.collider.CompareTag("MelodyDot"))
-        {
-            Debug.Log("黒状態でぶつかった！");
-            // ここにプレイヤーを止める処理など
-        }
-    }
+    [SerializeField] private AudioSource seSource;  // 効果音再生用 AudioSource
+    [SerializeField] private AudioClip passSE;      // 白状態で通過したときのSE
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("OnTriggerEnter2D: " + other.name);
-
         if (other.CompareTag("MelodyDot"))
         {
-            MelodyDotState state = other.GetComponent<MelodyDotState>();
-            if (state != null && state.IsPassable())
+            MelodyDotState dotState = other.GetComponent<MelodyDotState>();
+            if (dotState != null)
             {
-                Debug.Log("白状態：通過OK");
-            }
-            else
-            {
-                Debug.Log("白じゃないけど Trigger 経由で通過した？");
+                if (dotState.IsPassable())
+                {
+                    Debug.Log("白状態：通過OK");
+
+                    // 効果音を鳴らす
+                    if (seSource != null && passSE != null)
+                    {
+                        seSource.PlayOneShot(passSE);
+                    }
+                }
+                else
+                {
+                    Debug.Log("黒状態：ゲームオーバー！");
+                    // ゲームオーバー処理
+                }
             }
         }
     }
