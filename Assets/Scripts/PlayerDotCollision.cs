@@ -5,7 +5,7 @@ public class PlayerDotCollision : MonoBehaviour
     [SerializeField] private AudioSource seSource;  // 効果音再生用 AudioSource
     [SerializeField] private AudioClip passSE;      // 白状態で通過したときのSE
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("MelodyDot"))
         {
@@ -24,8 +24,8 @@ public class PlayerDotCollision : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("黒状態：ゲームオーバー！");
-                    // ゲームオーバー処理
+                    Debug.Log("黒状態：進行ブロック（ゲームオーバーではない）");
+                    // 通れないだけなので、何もしなくてOK
                 }
             }
         }
