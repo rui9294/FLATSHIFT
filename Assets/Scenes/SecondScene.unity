@@ -509,6 +509,7 @@ GameObject:
   - component: {fileID: 1166741294}
   - component: {fileID: 1166741293}
   - component: {fileID: 1166741295}
+  - component: {fileID: 1166741296}
   m_Layer: 6
   m_Name: PathLine2
   m_TagString: Untagged
@@ -580,7 +581,7 @@ Transform:
   m_GameObject: {fileID: 1166741292}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 17.4, y: 25, z: 0}
+  m_LocalPosition: {x: 0, y: 25, z: 0}
   m_LocalScale: {x: 0.1, y: 100, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -605,8 +606,21 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.4, y: 0.4, z: 0.4}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.40000007, y: 0.9995471, z: 0.4}
+  m_Center: {x: -6.468344e-16, y: -0.00013841629, z: 0}
+--- !u!114 &1166741296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1166741292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2694fb91c99314f44853d1e5f124c3d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allowedAxis: 1
 --- !u!1 &1197083179
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,6 +632,7 @@ GameObject:
   - component: {fileID: 1197083181}
   - component: {fileID: 1197083180}
   - component: {fileID: 1197083182}
+  - component: {fileID: 1197083183}
   m_Layer: 3
   m_Name: PathLine
   m_TagString: Untagged
@@ -690,7 +705,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 2000, z: 0.3}
+  m_LocalScale: {x: 0.1, y: 100, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -714,8 +729,21 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.4, y: 0.4, z: 0.4}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.40000004, y: 0.99983335, z: 0.4}
+  m_Center: {x: 0, y: 0.00011268615, z: 0}
+--- !u!114 &1197083183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1197083179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2694fb91c99314f44853d1e5f124c3d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allowedAxis: 2
 --- !u!1 &1465010615
 GameObject:
   m_ObjectHideFlags: 0
@@ -951,7 +979,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
-  allowedLayers:
+  cellLayer:
     serializedVersion: 2
     m_Bits: 72
 --- !u!212 &1781621652
