@@ -1,61 +1,67 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class PlayerDotMove : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public LayerMask allowedLayers;
+    public float moveSpeed = 3f;
+    public LayerMask cellLayer;
+    private Vector3 moveDir;
+    private Vector3 targetPos;
+    private bool isMoving = false;
 
-    private Rigidbody rb;
-    private Vector3 lastMoveDir = Vector3.zero;
-
-    void Start()
+    private void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
+        targetPos = transform.position;
     }
 
-    void FixedUpdate()
+    private void Update()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-
-        Vector3 input = new Vector3(h, v, 0f).normalized;
-        if (input == Vector3.zero)
+        if (!isMoving)
         {
-            lastMoveDir = Vector3.zero;
-            return;
-        }
+            float h = Input.GetAxisRaw("Horizontal");
+            float v = Input.GetAxisRaw("Vertical");
 
-        // 移動予定位置
-        Vector3 move = input * moveSpeed * Time.fixedDeltaTime;
-        Vector3 nextPos = rb.position + move;
-        nextPos.z = 0f;
+            moveDir = new Vector3(h, v, 0).normalized;
 
-        // 線との接触確認
-        bool onLine = Physics.OverlapSphere(nextPos, 0.15f, allowedLayers).Length > 0;
-
-        if (onLine)
-        {
-            lastMoveDir = input;
-
-            // スナップ処理：進行方向に応じて吸着
-            if (Mathf.Abs(input.x) > 0 && Mathf.Abs(input.y) == 0)
+            if (moveDir != Vector3.zero)
             {
-                // 横移動：Yを吸着
-                nextPos.y = Mathf.Round(rb.position.y * 10f) / 10f;
-            }
-            else if (Mathf.Abs(input.y) > 0 && Mathf.Abs(input.x) == 0)
-            {
-                // 縦移動：Xを吸着
-                nextPos.x = Mathf.Round(rb.position.x * 10f) / 10f;
-            }
+                Vector3 nextPos = transform.position + moveDir;
+                nextPos = new Vector3(Mathf.Round(nextPos.x), Mathf.Round(nextPos.y), 0); // グリッド整列
 
-            rb.MovePosition(nextPos);
+                if (IsCellPassable(nextPos, moveDir))
+                {
+                    targetPos = nextPos;
+                    isMoving = true;
+                }
+                else
+                {
+                    Debug.Log("❌ 通れない方向だよ");
+                }
+            }
         }
         else
         {
-            Debug.LogWarning("【線外移動禁止】線の上にいないので停止");
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+            if (Vector3.Distance(transform.position, targetPos) < 0.01f)
+            {
+                transform.position = targetPos;
+                isMoving = false;
+            }
         }
+    }
+
+    private bool IsCellPassable(Vector3 checkPos, Vector3 dir)
+    {
+        Collider[] hits = Physics.OverlapSphere(checkPos, 0.05f, cellLayer);
+        foreach (var hit in hits)
+        {
+            PassableCell cell = hit.GetComponent<PassableCell>();
+            if (cell != null)
+            {
+                if (cell.allowedAxis == PassableCell.Axis.Both) return true;
+                if (cell.allowedAxis == PassableCell.Axis.Horizontal && Mathf.Abs(dir.x) > 0) return true;
+                if (cell.allowedAxis == PassableCell.Axis.Vertical && Mathf.Abs(dir.y) > 0) return true;
+            }
+        }
+        return false;
     }
 }
