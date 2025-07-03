@@ -6,7 +6,7 @@ public class IntroDialogue : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private GameObject dialoguePanel;
-    [SerializeField] private PlayerDotMove playerMovementScript;
+    [SerializeField] private PlayerDotMove0D playerMovementScript;
 
     [TextArea(2, 5)]
     public string[] dialogueLines;
