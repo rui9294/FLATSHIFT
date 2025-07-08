@@ -11,11 +11,18 @@ public class PlayerDotMove : MonoBehaviour
 
     private void Start()
     {
-        targetPos = transform.position;
+        targetPos = SnapToGrid(transform.position);
+        transform.position = targetPos; // 初期位置も吸着
     }
 
     private void Update()
     {
+        // 強制グリッド吸着（ズレによるスタック防止）
+        if (!isMoving && moveDir == Vector3.zero)
+        {
+            transform.position = SnapToGrid(transform.position);
+        }
+
         if (!isMoving)
         {
             float h = Input.GetAxisRaw("Horizontal");
@@ -25,8 +32,7 @@ public class PlayerDotMove : MonoBehaviour
 
             if (moveDir != Vector3.zero)
             {
-                Vector3 nextPos = transform.position + moveDir;
-                nextPos = new Vector3(Mathf.Round(nextPos.x), Mathf.Round(nextPos.y), 0);
+                Vector3 nextPos = SnapToGrid(transform.position + moveDir);
 
                 if (IsCellPassable(nextPos, moveDir))
                 {
@@ -46,6 +52,7 @@ public class PlayerDotMove : MonoBehaviour
             if (Vector3.Distance(transform.position, targetPos) < 0.01f)
             {
                 transform.position = targetPos;
+                transform.position = SnapToGrid(transform.position); // 到達後の吸着
                 isMoving = false;
             }
         }
@@ -53,7 +60,7 @@ public class PlayerDotMove : MonoBehaviour
 
     private bool IsCellPassable(Vector3 gridPos, Vector3 dir)
     {
-        // ① PathLine確認（変わらず）
+        // ① PathLine確認
         Collider[] hits = Physics.OverlapSphere(gridPos, 0.05f, cellLayer);
         bool hasPath = false;
 
@@ -74,11 +81,11 @@ public class PlayerDotMove : MonoBehaviour
             return false;
         }
 
-        // ② 同じグリッドにいる MelodyDot を判定（距離ベースで近接チェック）
+        // ② MelodyDotとの重なりチェック（厳密化）
         GameObject[] dots = GameObject.FindGameObjectsWithTag("MelodyDot");
         foreach (var dot in dots)
         {
-            if (Vector3.Distance(dot.transform.position, gridPos) < 0.1f)
+            if (Vector3.Distance(dot.transform.position, gridPos) < 0.05f) // 精度UP
             {
                 MelodyDotState state = dot.GetComponent<MelodyDotState>();
                 if (state != null && !state.IsPassable())
@@ -90,6 +97,12 @@ public class PlayerDotMove : MonoBehaviour
         }
 
         return true;
+    }
+
+    // 位置をグリッド吸着
+    private Vector3 SnapToGrid(Vector3 pos)
+    {
+        return new Vector3(Mathf.Round(pos.x), Mathf.Round(pos.y), 0f);
     }
 
     private void OnDrawGizmos()
