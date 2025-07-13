@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerDotMove : MonoBehaviour
 {
@@ -9,15 +10,21 @@ public class PlayerDotMove : MonoBehaviour
     private Vector3 targetPos;
     private bool isMoving = false;
 
+    private HashSet<Vector2Int> blockedCells = new HashSet<Vector2Int>();
+
     private void Start()
     {
+        // 初期位置グリッド吸着
         targetPos = SnapToGrid(transform.position);
-        transform.position = targetPos; // 初期位置も吸着
+        transform.position = targetPos;
+
+        // 障害物スキャン
+        ScanForObstacles();
     }
 
     private void Update()
     {
-        // 強制グリッド吸着（ズレによるスタック防止）
+        // 強制グリッド吸着（ズレ防止）
         if (!isMoving && moveDir == Vector3.zero)
         {
             transform.position = SnapToGrid(transform.position);
@@ -33,15 +40,16 @@ public class PlayerDotMove : MonoBehaviour
             if (moveDir != Vector3.zero)
             {
                 Vector3 nextPos = SnapToGrid(transform.position + moveDir);
+                Vector2Int nextGrid = Vector2Int.RoundToInt(nextPos);
 
-                if (IsCellPassable(nextPos, moveDir))
+                if (!blockedCells.Contains(nextGrid))
                 {
                     targetPos = nextPos;
                     isMoving = true;
                 }
                 else
                 {
-                    Debug.Log("❌ 通れない方向だよ");
+                    Debug.Log("❌ そのマスは障害物だよ！");
                 }
             }
         }
@@ -52,54 +60,25 @@ public class PlayerDotMove : MonoBehaviour
             if (Vector3.Distance(transform.position, targetPos) < 0.01f)
             {
                 transform.position = targetPos;
-                transform.position = SnapToGrid(transform.position); // 到達後の吸着
+                transform.position = SnapToGrid(transform.position);
                 isMoving = false;
             }
         }
     }
 
-    private bool IsCellPassable(Vector3 gridPos, Vector3 dir)
+    private void ScanForObstacles()
     {
-        // ① PathLine確認
-        Collider[] hits = Physics.OverlapSphere(gridPos, 0.05f, cellLayer);
-        bool hasPath = false;
+        blockedCells.Clear();
 
-        foreach (var hit in hits)
+        ObstacleMarker[] obstacles = GameObject.FindObjectsOfType<ObstacleMarker>();
+        foreach (var obstacle in obstacles)
         {
-            PassableCell cell = hit.GetComponent<PassableCell>();
-            if (cell != null)
-            {
-                if (cell.allowedAxis == PassableCell.Axis.Both) hasPath = true;
-                if (cell.allowedAxis == PassableCell.Axis.Horizontal && Mathf.Abs(dir.x) > 0) hasPath = true;
-                if (cell.allowedAxis == PassableCell.Axis.Vertical && Mathf.Abs(dir.y) > 0) hasPath = true;
-            }
+            Vector2Int gridPos = Vector2Int.RoundToInt(obstacle.transform.position);
+            blockedCells.Add(gridPos);
+            Debug.Log($"🚫 障害物登録: {gridPos}");
         }
-
-        if (!hasPath)
-        {
-            Debug.Log("🛣 PathLineがない！");
-            return false;
-        }
-
-        // ② MelodyDotとの重なりチェック（厳密化）
-        GameObject[] dots = GameObject.FindGameObjectsWithTag("MelodyDot");
-        foreach (var dot in dots)
-        {
-            if (Vector3.Distance(dot.transform.position, gridPos) < 0.05f) // 精度UP
-            {
-                MelodyDotState state = dot.GetComponent<MelodyDotState>();
-                if (state != null && !state.IsPassable())
-                {
-                    Debug.Log("🚫 MelodyDotと同じマスにあり、通れない！");
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 
-    // 位置をグリッド吸着
     private Vector3 SnapToGrid(Vector3 pos)
     {
         return new Vector3(Mathf.Round(pos.x), Mathf.Round(pos.y), 0f);
