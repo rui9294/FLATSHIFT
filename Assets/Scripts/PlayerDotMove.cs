@@ -4,27 +4,25 @@ using System.Collections.Generic;
 public class PlayerDotMove : MonoBehaviour
 {
     public float moveSpeed = 3f;
-    public LayerMask cellLayer;
 
     private Vector3 moveDir;
     private Vector3 targetPos;
     private bool isMoving = false;
 
     private HashSet<Vector2Int> blockedCells = new HashSet<Vector2Int>();
+    private HashSet<Vector2Int> pathCells = new HashSet<Vector2Int>();
 
     private void Start()
     {
-        // 初期位置グリッド吸着
         targetPos = SnapToGrid(transform.position);
         transform.position = targetPos;
 
-        // 障害物スキャン
         ScanForObstacles();
+        ScanForPathLines();
     }
 
     private void Update()
     {
-        // 強制グリッド吸着（ズレ防止）
         if (!isMoving && moveDir == Vector3.zero)
         {
             transform.position = SnapToGrid(transform.position);
@@ -34,22 +32,20 @@ public class PlayerDotMove : MonoBehaviour
         {
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
-
             moveDir = new Vector3(h, v, 0).normalized;
 
             if (moveDir != Vector3.zero)
             {
-                Vector3 nextPos = SnapToGrid(transform.position + moveDir);
-                Vector2Int nextGrid = Vector2Int.RoundToInt(nextPos);
+                Vector2Int nextGrid = Vector2Int.RoundToInt(SnapToGrid(transform.position + moveDir));
 
-                if (!blockedCells.Contains(nextGrid))
+                if (IsCellPassable(nextGrid))
                 {
-                    targetPos = nextPos;
+                    targetPos = new Vector3(nextGrid.x, nextGrid.y, 0f);
                     isMoving = true;
                 }
                 else
                 {
-                    Debug.Log("❌ そのマスは障害物だよ！");
+                    Debug.Log("❌ 通れないマス");
                 }
             }
         }
@@ -60,22 +56,71 @@ public class PlayerDotMove : MonoBehaviour
             if (Vector3.Distance(transform.position, targetPos) < 0.01f)
             {
                 transform.position = targetPos;
-                transform.position = SnapToGrid(transform.position);
                 isMoving = false;
             }
         }
+    }
+
+    private bool IsCellPassable(Vector2Int grid)
+    {
+        if (!pathCells.Contains(grid))
+        {
+            Debug.Log("🛣 PathLineがない！");
+            return false;
+        }
+
+        if (blockedCells.Contains(grid))
+        {
+            Debug.Log("🚫 障害物がある！");
+            return false;
+        }
+
+        return true;
     }
 
     private void ScanForObstacles()
     {
         blockedCells.Clear();
 
-        ObstacleMarker[] obstacles = GameObject.FindObjectsOfType<ObstacleMarker>();
-        foreach (var obstacle in obstacles)
+        ObstacleState[] obstacles = GameObject.FindObjectsByType<ObstacleState>(FindObjectsSortMode.None);
+        foreach (var obs in obstacles)
         {
-            Vector2Int gridPos = Vector2Int.RoundToInt(obstacle.transform.position);
-            blockedCells.Add(gridPos);
-            Debug.Log($"🚫 障害物登録: {gridPos}");
+            if (!obs.IsPassable())
+            {
+                Vector2Int grid = Vector2Int.RoundToInt(obs.transform.position);
+                blockedCells.Add(grid);
+            }
+        }
+    }
+
+    private void ScanForPathLines()
+    {
+        pathCells.Clear();
+
+        PathLineMarker[] paths = GameObject.FindObjectsByType<PathLineMarker>(FindObjectsSortMode.None);
+        foreach (var path in paths)
+        {
+            Vector2Int start = path.startGrid;
+            Vector2Int end = path.endGrid;
+
+            if (start.x == end.x)
+            {
+                for (int y = Mathf.Min(start.y, end.y); y <= Mathf.Max(start.y, end.y); y++)
+                {
+                    pathCells.Add(new Vector2Int(start.x, y));
+                }
+            }
+            else if (start.y == end.y)
+            {
+                for (int x = Mathf.Min(start.x, end.x); x <= Mathf.Max(start.x, end.x); x++)
+                {
+                    pathCells.Add(new Vector2Int(x, start.y));
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"PathLineMarker {path.name} は縦または横の直線である必要があります！");
+            }
         }
     }
 
