@@ -1,12 +1,11 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class StartGameHandler : MonoBehaviour
 {
-    public string sceneName = "GameScene"; // ‘JˆÚæ‚ÌƒV[ƒ“–¼‚ğ‚±‚±‚É
+    [SerializeField] private string sceneName = "GameScene";
 
     public void StartGame()
     {
-        SceneManager.LoadScene(sceneName);
+        SceneFader.Instance.FadeToScene(sceneName);
     }
 }

@@ -7,19 +7,25 @@ public class IntroDialogue : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private PlayerDotMove0D playerMovementScript;
+    [SerializeField] private GameObject waitMark;
 
     [TextArea(2, 5)]
     public string[] dialogueLines;
 
     [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private float waitAfterFadeIn = 1.5f;
+    [SerializeField] private float waitMarkFloatSpeed = 1f;
+    [SerializeField] private float waitMarkFloatHeight = 10f;
 
     private int currentLine = 0;
+    private Vector3 waitMarkOriginalPos;
 
-    void Start()
+    public void BeginDialogue()
     {
         playerMovementScript.enabled = false;
         dialoguePanel.SetActive(true);
+        waitMarkOriginalPos = waitMark.transform.localPosition;
+        waitMark.SetActive(false);
         StartCoroutine(ShowDialogue());
     }
 
@@ -29,23 +35,23 @@ public class IntroDialogue : MonoBehaviour
         {
             dialogueText.text = dialogueLines[currentLine];
 
-            // 最初に透明に
             Color c = dialogueText.color;
             c.a = 0f;
             dialogueText.color = c;
 
-            // フェードイン
             yield return StartCoroutine(FadeText(0f, 1f, fadeDuration));
-
-            // 待機
             yield return new WaitForSeconds(waitAfterFadeIn);
 
-            // クリック待ち
+            waitMark.SetActive(true);
+            Coroutine floatMark = StartCoroutine(FloatWaitMark());
+
             yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
 
-            // フェードアウト
-            yield return StartCoroutine(FadeText(1f, 0f, fadeDuration));
+            StopCoroutine(floatMark);
+            waitMark.SetActive(false);
+            waitMark.transform.localPosition = waitMarkOriginalPos;
 
+            yield return StartCoroutine(FadeText(1f, 0f, fadeDuration));
             currentLine++;
         }
 
@@ -66,9 +72,21 @@ public class IntroDialogue : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-        // 最終値補正
+
         Color final = dialogueText.color;
         final.a = to;
         dialogueText.color = final;
+    }
+
+    private IEnumerator FloatWaitMark()
+    {
+        float timer = 0f;
+        while (true)
+        {
+            float offsetY = Mathf.Sin(timer * waitMarkFloatSpeed) * waitMarkFloatHeight;
+            waitMark.transform.localPosition = waitMarkOriginalPos + new Vector3(0f, offsetY, 0f);
+            timer += Time.deltaTime;
+            yield return null;
+        }
     }
 }
