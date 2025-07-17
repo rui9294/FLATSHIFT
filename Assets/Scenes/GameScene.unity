@@ -641,6 +641,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  canMove: 1
 --- !u!1 &570867446
 GameObject:
   m_ObjectHideFlags: 0
@@ -1512,7 +1513,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 1
+  m_Radius: 0.2
 --- !u!114 &1546160151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1544,8 +1545,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.67578065
-      value: 0.29438797
+      time: 0.5321039
+      value: 0.059524685
       inSlope: 1.397798
       outSlope: 1.397798
       tangentMode: 0
@@ -1577,7 +1578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 468366757}
-  playerMovementScript: {fileID: 0}
+  playerMovementScript: {fileID: 468366766}
   focusMoveDuration: 2
   stayFocusedDuration: 2
   returnMoveDuration: 2
