@@ -4,7 +4,7 @@ using System.Collections;
 public class GrayCircleZoomFocus : MonoBehaviour
 {
     public Transform player;
-    public PlayerDotMove playerMovementScript;
+    public PlayerDotMove0D playerMovementScript; // 修正：DotMove0Dに対応
 
     [SerializeField] private float focusMoveDuration = 2f;      // 灰丸へ移動時間
     [SerializeField] private float stayFocusedDuration = 2f;    // 灰丸で止まる時間
@@ -44,9 +44,9 @@ public class GrayCircleZoomFocus : MonoBehaviour
     {
         hasFocused = true;
 
-        // プレイヤーの移動を止める
+        // 入力を止める
         if (playerMovementScript != null)
-            playerMovementScript.enabled = false;
+            playerMovementScript.canMove = false;
 
         // カメラの追従を止める
         if (cameraFollowScript != null)
@@ -56,19 +56,19 @@ public class GrayCircleZoomFocus : MonoBehaviour
         Vector3 targetPos = new Vector3(transform.position.x, transform.position.y, originalCamPos.z);
         yield return MoveCamera(mainCamera.transform.position, targetPos, focusMoveDuration);
 
-        // 灰丸でしばらく止まる
+        // 灰丸で止まる時間
         yield return new WaitForSeconds(stayFocusedDuration);
 
-        // カメラを黒丸へ戻す
+        // カメラをプレイヤーの元位置へ戻す
         Vector3 returnPos = new Vector3(player.position.x, player.position.y, originalCamPos.z);
         yield return MoveCamera(mainCamera.transform.position, returnPos, returnMoveDuration);
 
-        // カメラ追従とプレイヤー操作を再開
+        // カメラ追従とプレイヤー移動を再開
         if (cameraFollowScript != null)
             cameraFollowScript.isFrozen = false;
 
         if (playerMovementScript != null)
-            playerMovementScript.enabled = true;
+            playerMovementScript.canMove = true;
     }
 
     private IEnumerator MoveCamera(Vector3 from, Vector3 to, float duration)
