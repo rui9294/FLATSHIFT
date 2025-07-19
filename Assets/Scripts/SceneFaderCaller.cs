@@ -1,26 +1,28 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SceneFaderCaller : MonoBehaviour
 {
     [SerializeField] private IntroDialogue introDialogue;
 
-    private void Start()
+    void Start()
     {
-        SceneFader fader = Object.FindFirstObjectByType<SceneFader>();
-        if (fader != null)
+        if (SceneManager.GetActiveScene().name != "TitleScene") // タイトルシーンならスキップ
         {
-            StartCoroutine(FadeAndStartDialogue(fader));
-        }
-        else
-        {
-            Debug.LogWarning("SceneFader が見つかりませんでした。");
+            if (SceneFader.Instance != null)
+            {
+                StartCoroutine(FadeAndStartDialogue());
+            }
         }
     }
 
-    private IEnumerator FadeAndStartDialogue(SceneFader fader)
+    private IEnumerator FadeAndStartDialogue()
     {
-        yield return fader.FadeInFromWhiteCoroutine();
-        introDialogue.BeginDialogue();
+        yield return SceneFader.Instance.FadeInFromWhiteCoroutine();
+        if (introDialogue != null)
+        {
+            introDialogue.BeginDialogue();
+        }
     }
 }
